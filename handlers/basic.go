@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"commit-forge/models"
 )
 
-const VERSION = "v0.2.0"
-
-type apiError struct {
-	Error string `json:"error"`
-}
+const VERSION = "v0.3.0"
 
 // Root is a simple landing handler describing available routes.
 func Root(w http.ResponseWriter, r *http.Request) {
@@ -19,12 +17,12 @@ func Root(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]string{
-		"message":        "Welcome to Commit Forge",
-		"health_route":   "/healthz",
-		"version_route":  "/version",
-		"rewrite_route":  "/rewrite-commits",
-		"example_method": "POST /rewrite-commits",
+	writeJSON(w, http.StatusOK, models.RouteInfo{
+		Message:       "Welcome to Commit Forge",
+		HealthRoute:   "/healthz",
+		VersionRoute:  "/version",
+		RewriteRoute:  "/rewrite-commits",
+		ExampleMethod: "POST /rewrite-commits",
 	})
 }
 
@@ -46,9 +44,9 @@ func Version(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]string{
-		"version": VERSION,
-		"time":    time.Now().UTC().Format(time.RFC3339),
+	writeJSON(w, http.StatusOK, models.VersionInfo{
+		Version: VERSION,
+		Time:    time.Now().UTC().Format(time.RFC3339),
 	})
 }
 
@@ -59,5 +57,5 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 }
 
 func writeJSONError(w http.ResponseWriter, status int, msg string) {
-	writeJSON(w, status, apiError{Error: msg})
+	writeJSON(w, status, models.APIError{Error: msg})
 }
