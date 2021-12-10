@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"commit-forge/config"
+	"commit-forge/handlers"
 	"commit-forge/middleware"
 	"commit-forge/routes"
 )
@@ -53,6 +54,7 @@ func (s *Server) Start() error {
 
 	go func() {
 		log.Printf("Starting server on %s ...", s.httpServer.Addr)
+		handlers.SetReady()
 		errCh <- s.httpServer.ListenAndServe()
 	}()
 
