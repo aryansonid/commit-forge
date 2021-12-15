@@ -10,3 +10,10 @@ type RewriteRequest struct {
 	AuthorEmail      string `json:"author_email"`
 	TargetBranch     string `json:"target_branch,omitempty"`
 }
+
+// RewriteResponse is returned when a rewrite completes successfully.
+type RewriteResponse struct {
+	Message string `json:"message"`
+	Branch  string `json:"branch"`
+	DestURL string `json:"dest_url"`
+}
