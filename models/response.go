@@ -24,3 +24,10 @@ type RouteInfo struct {
 	RewriteRoute  string `json:"rewrite_route"`
 	ExampleMethod string `json:"example_method"`
 }
+
+// HealthStatus represents detailed health check response.
+type HealthStatus struct {
+	Status  string `json:"status"`
+	Version string `json:"version"`
+	Uptime  string `json:"uptime,omitempty"`
+}
