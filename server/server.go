@@ -1,8 +1,12 @@
 package server
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"commit-forge/config"
@@ -42,8 +46,27 @@ func New(cfg *config.Config) *Server {
 	}
 }
 
-// Start begins serving HTTP traffic.
+// Start begins serving HTTP traffic with graceful shutdown.
 func (s *Server) Start() error {
-	log.Printf("Starting server on %s ...", s.httpServer.Addr)
-	return s.httpServer.ListenAndServe()
+	errCh := make(chan error, 1)
+
+	go func() {
+		log.Printf("Starting server on %s ...", s.httpServer.Addr)
+		errCh <- s.httpServer.ListenAndServe()
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	select {
+	case err := <-errCh:
+		return err
+	case sig := <-quit:
+		log.Printf("Received signal %v, shutting down gracefully...", sig)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	return s.httpServer.Shutdown(ctx)
 }
