@@ -8,7 +8,7 @@ import (
 	"commit-forge/models"
 )
 
-const VERSION = "v0.3.0"
+const VERSION = "v0.4.0"
 
 // Root is a simple landing handler describing available routes.
 func Root(w http.ResponseWriter, r *http.Request) {
