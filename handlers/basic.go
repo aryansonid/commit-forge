@@ -9,7 +9,7 @@ import (
 	"commit-forge/models"
 )
 
-const VERSION = "v0.4.0"
+const VERSION = "v0.5.0"
 
 var ready atomic.Bool
 
@@ -23,12 +23,15 @@ func Root(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, models.RouteInfo{
-		Message:       "Welcome to Commit Forge",
-		HealthRoute:   "/healthz",
-		VersionRoute:  "/version",
-		RewriteRoute:  "/rewrite-commits",
-		ExampleMethod: "POST /rewrite-commits",
+	writeJSON(w, http.StatusOK, map[string]any{
+		"service":        "Commit Forge",
+		"version":        VERSION,
+		"health_route":   "/healthz",
+		"ready_route":    "/readyz",
+		"version_route":  "/version",
+		"status_route":   "/status",
+		"rewrite_route":  "/rewrite-commits",
+		"example_method": "POST /rewrite-commits",
 	})
 }
 
