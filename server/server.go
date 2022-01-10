@@ -3,30 +3,27 @@ package server
 import (
 	"log"
 	"net/http"
-	"os"
 	"time"
 
+	"commit-forge/config"
 	"commit-forge/routes"
 )
 
 // Server wraps the HTTP server configuration.
 type Server struct {
 	httpServer *http.Server
+	cfg        *config.Config
 }
 
 // New creates a new Server with routes and middleware wired up.
-func New() *Server {
+func New(cfg *config.Config) *Server {
 	mux := http.NewServeMux()
 	routes.Register(mux)
 
-	// PORT from env, default 8080
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	addr := ":" + port
+	addr := ":" + cfg.Port
 
 	return &Server{
+		cfg: cfg,
 		httpServer: &http.Server{
 			Addr:    addr,
 			Handler: loggingMiddleware(mux),
