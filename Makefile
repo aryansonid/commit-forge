@@ -1,4 +1,4 @@
-.PHONY: build run test clean lint fmt vet docker-build docker-up docker-down
+.PHONY: build run test test-cover clean lint fmt vet docker-build docker-up docker-down
 
 BINARY_NAME=commit-forge
 GO=go
@@ -12,8 +12,15 @@ run: build
 test:
 	$(GO) test ./... -v
 
+test-cover:
+	$(GO) test ./... -v -coverprofile=coverage.out
+	$(GO) tool cover -html=coverage.out -o coverage.html
+
+test-race:
+	$(GO) test ./... -v -race
+
 clean:
-	rm -f $(BINARY_NAME)
+	rm -f $(BINARY_NAME) coverage.out coverage.html
 	$(GO) clean
 
 lint:
