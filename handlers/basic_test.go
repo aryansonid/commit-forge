@@ -95,3 +95,30 @@ func TestVersionHandlerMethodNotAllowed(t *testing.T) {
 		t.Errorf("expected status 405, got %d", rr.Code)
 	}
 }
+
+func TestReadyHandler_NotReady(t *testing.T) {
+	ready.Store(false)
+	req := httptest.NewRequest(http.MethodGet, "/readyz", nil)
+	rr := httptest.NewRecorder()
+
+	Ready(rr, req)
+
+	if rr.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected status 503, got %d", rr.Code)
+	}
+}
+
+func TestReadyHandler_Ready(t *testing.T) {
+	SetReady()
+	req := httptest.NewRequest(http.MethodGet, "/readyz", nil)
+	rr := httptest.NewRecorder()
+
+	Ready(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected status 200, got %d", rr.Code)
+	}
+	if rr.Body.String() != "ready" {
+		t.Errorf("expected body 'ready', got %s", rr.Body.String())
+	}
+}
