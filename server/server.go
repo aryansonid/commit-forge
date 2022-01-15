@@ -27,6 +27,7 @@ func New(cfg *config.Config) *Server {
 
 	chain := middleware.Chain(
 		middleware.Recovery,
+		middleware.SecurityHeaders,
 		middleware.RequestID,
 		middleware.CORS(cfg.CORSAllowOrigins),
 		middleware.Logging,
