@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"commit-forge/config"
+	"commit-forge/middleware"
 	"commit-forge/routes"
 )
 
@@ -20,13 +21,23 @@ func New(cfg *config.Config) *Server {
 	mux := http.NewServeMux()
 	routes.Register(mux)
 
+	chain := middleware.Chain(
+		middleware.Recovery,
+		middleware.RequestID,
+		middleware.CORS(cfg.CORSAllowOrigins),
+		middleware.Logging,
+	)
+
 	addr := ":" + cfg.Port
 
 	return &Server{
 		cfg: cfg,
 		httpServer: &http.Server{
-			Addr:    addr,
-			Handler: loggingMiddleware(mux),
+			Addr:         addr,
+			Handler:      chain(mux),
+			ReadTimeout:  15 * time.Second,
+			WriteTimeout: cfg.RequestTimeout + 10*time.Second,
+			IdleTimeout:  60 * time.Second,
 		},
 	}
 }
@@ -35,13 +46,4 @@ func New(cfg *config.Config) *Server {
 func (s *Server) Start() error {
 	log.Printf("Starting server on %s ...", s.httpServer.Addr)
 	return s.httpServer.ListenAndServe()
-}
-
-// loggingMiddleware logs basic request information.
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		next.ServeHTTP(w, r)
-		log.Printf("%s %s %s", r.Method, r.URL.Path, time.Since(start))
-	})
 }
