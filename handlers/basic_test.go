@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"commit-forge/models"
 )
 
 func TestRootHandler(t *testing.T) {
@@ -19,13 +17,16 @@ func TestRootHandler(t *testing.T) {
 		t.Errorf("expected status 200, got %d", rr.Code)
 	}
 
-	var body models.RouteInfo
+	var body map[string]any
 	if err := json.NewDecoder(rr.Body).Decode(&body); err != nil {
 		t.Fatalf("failed to decode response: %v", err)
 	}
 
-	if body.Message != "Welcome to Commit Forge" {
-		t.Errorf("unexpected message: %s", body.Message)
+	if body["service"] != "Commit Forge" {
+		t.Errorf("unexpected service name: %v", body["service"])
+	}
+	if body["version"] != VERSION {
+		t.Errorf("unexpected version: %v", body["version"])
 	}
 }
 
@@ -75,13 +76,13 @@ func TestVersionHandler(t *testing.T) {
 		t.Errorf("expected status 200, got %d", rr.Code)
 	}
 
-	var body models.VersionInfo
+	var body map[string]string
 	if err := json.NewDecoder(rr.Body).Decode(&body); err != nil {
 		t.Fatalf("failed to decode response: %v", err)
 	}
 
-	if body.Version != VERSION {
-		t.Errorf("expected version %s, got %s", VERSION, body.Version)
+	if body["version"] != VERSION {
+		t.Errorf("expected version %s, got %s", VERSION, body["version"])
 	}
 }
 
