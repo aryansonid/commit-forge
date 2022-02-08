@@ -70,3 +70,8 @@ func (c *Config) Validate() error {
 	}
 	return nil
 }
+
+// String returns a safe string representation (without secrets).
+func (c *Config) String() string {
+	return "Config{Port:" + c.Port + ", LogLevel:" + c.LogLevel + ", CORSAllowOrigins:" + c.CORSAllowOrigins + "}"
+}
