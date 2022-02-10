@@ -47,3 +47,12 @@ jobs:
         run: |
           gofmt -l .
           test -z "$(gofmt -l .)"
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t commit-forge:test .
