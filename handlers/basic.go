@@ -9,9 +9,15 @@ import (
 	"commit-forge/models"
 )
 
-const VERSION = "v0.5.0"
+var (
+	// VERSION is the current application version.
+	VERSION = "v0.5.0"
 
-var ready atomic.Bool
+	// BuildTime can be set at compile time via -ldflags.
+	BuildTime = "unknown"
+
+	ready atomic.Bool
+)
 
 // SetReady marks the service as ready to accept traffic.
 func SetReady() { ready.Store(true) }
@@ -62,16 +68,17 @@ func Ready(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("ready"))
 }
 
-// Version reports service version information.
+// Version reports service version and build information.
 func Version(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	writeJSON(w, http.StatusOK, models.VersionInfo{
-		Version: VERSION,
-		Time:    time.Now().UTC().Format(time.RFC3339),
+	writeJSON(w, http.StatusOK, map[string]string{
+		"version":    VERSION,
+		"build_time": BuildTime,
+		"time":       time.Now().UTC().Format(time.RFC3339),
 	})
 }
 
