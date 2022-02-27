@@ -3,12 +3,18 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"sync/atomic"
 	"time"
 
 	"commit-forge/models"
 )
 
 const VERSION = "v0.4.0"
+
+var ready atomic.Bool
+
+// SetReady marks the service as ready to accept traffic.
+func SetReady() { ready.Store(true) }
 
 // Root is a simple landing handler describing available routes.
 func Root(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +41,22 @@ func Health(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("ok"))
+}
+
+// Ready reports whether the service is ready for traffic.
+func Ready(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if !ready.Load() {
+		http.Error(w, "not ready", http.StatusServiceUnavailable)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("ready"))
 }
 
 // Version reports service version information.
