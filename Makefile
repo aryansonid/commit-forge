@@ -40,3 +40,19 @@ docker-up:
 
 docker-down:
 	docker compose down
+
+help:
+	@echo "Available targets:"
+	@echo "  build        - Build the binary"
+	@echo "  run          - Build and run the server"
+	@echo "  test         - Run all tests"
+	@echo "  test-cover   - Run tests with coverage report"
+	@echo "  test-race    - Run tests with race detector"
+	@echo "  clean        - Remove build artifacts"
+	@echo "  lint         - Run golangci-lint"
+	@echo "  fmt          - Format Go code"
+	@echo "  vet          - Run go vet"
+	@echo "  docker-build - Build Docker image"
+	@echo "  docker-up    - Start Docker containers"
+	@echo "  docker-down  - Stop Docker containers"
+	@echo "  help         - Show this help message"
