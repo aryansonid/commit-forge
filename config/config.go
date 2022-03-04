@@ -56,3 +56,17 @@ func getDurationEnv(key string, fallback time.Duration) time.Duration {
 	}
 	return d
 }
+
+// Validate checks that the loaded config has valid values.
+func (c *Config) Validate() error {
+	if c.Port == "" {
+		return ErrPortRequired
+	}
+	if c.MaxRetryAttempts < 1 {
+		return ErrInvalidRetryAttempts
+	}
+	if c.RequestTimeout < time.Second {
+		return ErrInvalidTimeout
+	}
+	return nil
+}
