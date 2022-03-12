@@ -1,0 +1,12 @@
+.git
+.gitignore
+.github
+.env
+.env.local
+*.md
+LICENSE
+Makefile
+cloner
+*.test
+*.out
+*.prof
