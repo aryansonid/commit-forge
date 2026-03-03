@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const Version = "v0.2.0"
+const VERSION = "v0.2.0"
 
 type apiError struct {
 	Error string `json:"error"`
@@ -47,7 +47,7 @@ func Version(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, map[string]string{
-		"version": Version,
+		"version": VERSION,
 		"time":    time.Now().UTC().Format(time.RFC3339),
 	})
 }
